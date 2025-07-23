@@ -1,4 +1,4 @@
-@"
+
 FROM node:18-alpine
 
 WORKDIR /app
@@ -13,4 +13,4 @@ RUN npm run build
 EXPOSE 1337
 
 CMD ["npm", "start"]
-"@ | Set-Content -Path Dockerfile
+
