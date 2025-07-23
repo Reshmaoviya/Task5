@@ -4,32 +4,22 @@ provider "aws" {
   secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
-variable "key_name" {}
-variable "dockerhub_username" {}
-variable "docker_password" {}
-
 resource "aws_instance" "strapi" {
-  ami                    = "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI (Ohio) - adjust if needed
-  instance_type          = "t2.micro"
-  key_name               = var.key_name
-  associate_public_ip_address = true
+  ami           = "ami-08c40ec9ead489470" # Ubuntu 22.04 LTS (Ohio)
+  instance_type = "t2.micro"
+  key_name      = var.key_name
 
   user_data = <<-EOF
               #!/bin/bash
-              sudo yum update -y
-              sudo amazon-linux-extras install docker -y
-              sudo service docker start
-              sudo usermod -a -G docker ec2-user
+              apt update -y
+              apt install docker.io -y
+              systemctl start docker
               docker login -u ${var.dockerhub_username} -p ${var.docker_password}
-              docker pull reshh07/strapi-ec2:latest
-              docker run -d -p 80:1337 reshh07/strapi-ec2:latest
-              EOF
+              docker pull ${var.dockerhub_username}/strapi-ec2:latest
+              docker run -d -p 80:1337 ${var.dockerhub_username}/strapi-ec2:latest
+            EOF
 
   tags = {
     Name = "StrapiEC2"
   }
-}
-
-output "strapi_public_ip" {
-  value = aws_instance.strapi.public_ip
 }
