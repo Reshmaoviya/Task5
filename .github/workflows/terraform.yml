@@ -1,22 +1,18 @@
-name: Manual Terraform EC2 Deploy
+name: Terraform Strapi Deployment
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
-  terraform-deploy:
-    name: Terraform Plan & Apply
+  terraform:
     runs-on: ubuntu-latest
-
-    env:
-      AWS_REGION: us-east-2
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.5
 
@@ -31,8 +27,7 @@ jobs:
             -var="AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -var="key_name=${{ secrets.KEY_NAME }}" \
             -var="dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}" \
-            -var="docker_password=${{ secrets.DOCKER_PASSWORD }}" \
-            -input=false -no-color
+            -var="docker_password=${{ secrets.DOCKER_PASSWORD }}"
         working-directory: ./terraform
 
       - name: Terraform Apply
